@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "855557064736",
+    "project_id": "fir-note-a7ac8",
+    "storage_bucket": "fir-note-a7ac8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:855557064736:android:1b98d1180a7b1272695445",
+        "android_client_info": {
+          "package_name": "com.example.note_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "855557064736-koulc7cu17je54oqhknulh07j0dub0h9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkxQorujXjtM45EgcKoneYGTUKSHSjU34"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "855557064736-koulc7cu17je54oqhknulh07j0dub0h9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
