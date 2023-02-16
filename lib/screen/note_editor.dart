@@ -16,8 +16,9 @@ class NoteEditorScreen extends StatefulWidget {
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
   int color_id = Random().nextInt(AppStyle.cardsColor.length);
   String date = DateFormat.yMMMMEEEEd().format(DateTime.now());
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _mainController = TextEditingController();
+  String? title;
+  String? desc;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,13 +36,13 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         actions: [
           IconButton(
             onPressed: () async {
-              FirebaseFirestore.instance.collection("Notes").add({
-                "note_title": _titleController.text.trim(),
+              FirebaseFirestore.instance.collection("Notes").doc('user').set({
+                "note_title": title!.trim(),
                 "creation_date": date.trim(),
-                "note_content": _mainController.text.trim(),
+                "note_content": desc!.trim(),
                 "color_id": color_id,
               }).then((value) {
-                print(value.id);
+                
                 Navigator.pop(context);
               }).catchError(
                   (error) => print("Failed to add new note due to $error"));
@@ -57,8 +58,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _titleController,
+            TextFormField(
+              onChanged: (val) {
+                title = val;
+              },
               decoration: const InputDecoration(
                 border: InputBorder.none,
                 hintText: 'Note Title',
@@ -75,8 +78,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             const SizedBox(
               height: 28,
             ),
-            TextField(
-              controller: _mainController,
+            TextFormField(
+              // controller: _mainController,
+              onChanged: (val) {
+                desc = val;
+              },
               keyboardType: TextInputType.multiline,
               maxLines: null,
               decoration: const InputDecoration(
