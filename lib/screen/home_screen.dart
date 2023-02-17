@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:note_app/helper/services/auth_service.dart';
 import 'package:note_app/widget/note_card.dart';
 import '../style/app_style.dart';
+import 'auth/login.dart';
 import 'note_editor.dart';
 import 'note_reader.dart';
 
@@ -14,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  AuthService authService = AuthService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,13 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
+              onPressed: () async {
+                await authService.signOut();
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                    (route) => false);
               },
-              icon: Icon(
-                Icons.exit_to_app,
-                color: Colors.purple,
-              ))
+              icon: Icon(Icons.exit_to_app_sharp))
         ],
         elevation: 0,
         title: Text(

@@ -42,7 +42,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 "note_content": desc!.trim(),
                 "color_id": color_id,
               }).then((value) {
-                
                 Navigator.pop(context);
               }).catchError(
                   (error) => print("Failed to add new note due to $error"));

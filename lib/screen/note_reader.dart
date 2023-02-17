@@ -19,7 +19,7 @@ class _NoteReaderScreenState extends State<NoteReaderScreen> {
   bool edit = false;
 
   final CollectionReference ref =
-      FirebaseFirestore.instance.collection("Notes");
+      FirebaseFirestore.instance.collection("user");
   @override
   Widget build(BuildContext context) {
     int colorId = widget.doc["color_id"];
@@ -108,12 +108,12 @@ class _NoteReaderScreenState extends State<NoteReaderScreen> {
   }
 
   void delete() async {
-    FirebaseFirestore.instance.collection("Notes").doc('user').delete();
+    FirebaseFirestore.instance.collection("Notes").doc("user").delete();
     Navigator.pop(context);
   }
 
   void save() async {
-    FirebaseFirestore.instance.collection("Notes").doc('user').update({
+    FirebaseFirestore.instance.collection("Notes").doc("user").update({
       "note_title": title!.trim(),
       "note_content": desc!.trim(),
     });
