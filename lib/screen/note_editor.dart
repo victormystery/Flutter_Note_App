@@ -3,7 +3,9 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
+import '../helper/services/auth_service.dart';
 import '../style/app_style.dart';
 
 class NoteEditorScreen extends StatefulWidget {
@@ -36,7 +38,13 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         actions: [
           IconButton(
             onPressed: () async {
-              FirebaseFirestore.instance.collection("Notes").doc('user').set({
+              AuthService authService = AuthService();
+              FirebaseFirestore.instance
+                  .collection("Notes")
+                  .doc(authService.firebaseAuth.currentUser!.uid)
+                  .collection('notes')
+                  .doc()
+                  .set({
                 "note_title": title!.trim(),
                 "creation_date": date.trim(),
                 "note_content": desc!.trim(),
@@ -44,7 +52,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               }).then((value) {
                 Navigator.pop(context);
               }).catchError(
-                  (error) => print("Failed to add new note due to $error"));
+                      (error) => print("Failed to add new note due to $error"));
             },
             icon: const Icon(Icons.check),
             color: AppStyle.accentColor,

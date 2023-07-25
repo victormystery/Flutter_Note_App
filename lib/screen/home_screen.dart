@@ -61,6 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection("Notes")
+                      .doc(authService.firebaseAuth.currentUser!.uid)
+                      .collection('notes')
                       .snapshots(),
                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {

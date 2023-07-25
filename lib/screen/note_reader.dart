@@ -1,30 +1,35 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:note_app/helper/services/auth_service.dart';
 
 import '../style/app_style.dart';
 
 class NoteReaderScreen extends StatefulWidget {
   NoteReaderScreen(this.doc, {Key? key}) : super(key: key);
-  QueryDocumentSnapshot doc;
+  final QueryDocumentSnapshot doc;
 
   @override
   State<NoteReaderScreen> createState() => _NoteReaderScreenState();
 }
 
 class _NoteReaderScreenState extends State<NoteReaderScreen> {
-  String? title;
-  String? desc;
+  late String title;
+  late String desc;
   bool edit = false;
 
-  final CollectionReference ref =
-      FirebaseFirestore.instance.collection("user");
+  final CollectionReference ref = FirebaseFirestore.instance.collection("user");
+
+  @override
+  void initState() {
+    super.initState();
+    title = widget.doc['note_title'];
+    desc = widget.doc['note_content'];
+  }
+
   @override
   Widget build(BuildContext context) {
     int colorId = widget.doc["color_id"];
-    title = widget.doc['note_title'];
-    desc = widget.doc['note_content'];
+
     return Scaffold(
       backgroundColor: AppStyle.cardsColor[colorId],
       floatingActionButton: edit
@@ -38,21 +43,25 @@ class _NoteReaderScreenState extends State<NoteReaderScreen> {
         elevation: 0.0,
         actions: [
           IconButton(
-              onPressed: () {
-                setState(() {
-                  edit = !edit;
-                });
-              },
-              icon: Icon(
-                Icons.edit,
-                color: Colors.blue,
-              )),
+            onPressed: () {
+              setState(() {
+                edit = !edit;
+              });
+            },
+            icon: Icon(
+              Icons.edit,
+              color: Colors.blue,
+            ),
+          ),
           IconButton(
-              onPressed: delete,
-              icon: Icon(
-                Icons.delete,
-                color: Colors.red,
-              )),
+            onPressed: () {
+              showDeleteConfirmationDialog();
+            },
+            icon: Icon(
+              Icons.delete,
+              color: Colors.red,
+            ),
+          ),
         ],
       ),
       body: Padding(
@@ -72,10 +81,6 @@ class _NoteReaderScreenState extends State<NoteReaderScreen> {
               ),
               style: AppStyle.mainTitle,
             ),
-            // Text(
-            //   widget.doc["note_title"],
-            //   style: AppStyle.mainTitle,
-            // ),
             const SizedBox(
               height: 8,
             ),
@@ -86,7 +91,6 @@ class _NoteReaderScreenState extends State<NoteReaderScreen> {
             const SizedBox(
               height: 28,
             ),
-
             TextFormField(
               onChanged: (val) {
                 desc = val;
@@ -107,16 +111,64 @@ class _NoteReaderScreenState extends State<NoteReaderScreen> {
     );
   }
 
-  void delete() async {
-    FirebaseFirestore.instance.collection("Notes").doc("user").delete();
+  void showDeleteConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Delete Note"),
+          content: Text("Are you sure you want to delete this note?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                deleteNote();
+              },
+              child: Text("Delete"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void deleteNote() async {
+    AuthService authService = AuthService();
+    DocumentReference notecol = FirebaseFirestore.instance
+        .collection("Notes")
+        .doc(authService.firebaseAuth.currentUser!.uid)
+        .collection('notes')
+        .doc(widget.doc.id);
+
+    notecol.delete();
+
     Navigator.pop(context);
   }
 
   void save() async {
-    FirebaseFirestore.instance.collection("Notes").doc("user").update({
-      "note_title": title!.trim(),
-      "note_content": desc!.trim(),
-    });
-    Navigator.pop(context);
+    AuthService authService = AuthService();
+    DocumentReference notecol = FirebaseFirestore.instance
+        .collection("Notes")
+        .doc(authService.firebaseAuth.currentUser!.uid)
+        .collection('notes')
+        .doc(widget.doc.id);
+
+    try {
+      await notecol.update({
+        "note_title": title.trim(),
+        "note_content": desc.trim(),
+      });
+      Navigator.pop(context);
+    } catch (e) {
+      // Handle error, if any
+      print("Error updating note: $e");
+      // You can show a snackbar or an error dialog to inform the user about the failure.
+    }
   }
 }

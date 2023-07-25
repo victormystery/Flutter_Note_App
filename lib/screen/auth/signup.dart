@@ -8,7 +8,7 @@ import '../home_screen.dart';
 import 'login.dart';
 
 class SiggnupScreen extends StatefulWidget {
-  const SiggnupScreen({Key? key});
+  const SiggnupScreen({Key? key,}) : super(key: key);
 
   @override
   State<SiggnupScreen> createState() => _SiggnupScreenState();
@@ -61,7 +61,7 @@ class _SiggnupScreenState extends State<SiggnupScreen> {
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
 
